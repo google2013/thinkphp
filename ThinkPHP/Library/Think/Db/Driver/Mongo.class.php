@@ -270,8 +270,11 @@ class Mongo extends Driver
      * @param string $pk 主键名
      * @return integer
      */
-    public function getMongoNextId($pk)
+    public function getMongoNextId($pk,$options=array())
     {
+        if (isset($options['table'])) {
+            $this->switchCollection($options['table']);
+        }
         if ($this->config['debug']) {
             $this->queryStr = $this->_dbName . '.' . $this->_collectionName . '.find({},{' . $pk . ':1}).sort({' . $pk . ':-1}).limit(1)';
         }
@@ -622,7 +625,7 @@ class Mongo extends Driver
             if (is_array($val)) {
                 switch ($val[0]) {
                     case 'inc':
-                        $result['$inc'][$key] = (int) $val[1];
+                        $result['$inc'][$key] = (float) $val[1];
                         break;
                     case 'set':
                     case 'unset':
